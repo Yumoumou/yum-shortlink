@@ -1,10 +1,9 @@
 package com.yum.shortlink.admin.controller;
 
 import com.yum.shortlink.admin.common.convention.result.Result;
-import com.yum.shortlink.admin.common.enums.UserErrorCodeEnum;
+import com.yum.shortlink.admin.common.convention.result.Results;
 import com.yum.shortlink.admin.dto.response.UserRespDTO;
 import com.yum.shortlink.admin.service.IUserService;
-import com.yum.shortlink.admin.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,10 +25,9 @@ public class UserController {
      */
     @GetMapping("/api/shortlink/v1/user/{username}")
     public Result<UserRespDTO> getUserByUsername(@PathVariable("username") String username) {
+
         UserRespDTO result = userService.getUserByUsername(username);
-        if(Objects.isNull(result)) {
-            return Result.fail(UserErrorCodeEnum.USER_NOT_EXIST.code(), UserErrorCodeEnum.USER_NOT_EXIST.message());
-        }
-        return Result.success(result);
+
+        return Results.success(result);
     }
 }

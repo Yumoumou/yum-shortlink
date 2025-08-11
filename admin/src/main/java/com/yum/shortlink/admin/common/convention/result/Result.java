@@ -43,39 +43,8 @@ public class Result<T> implements Serializable {
 
     /**
      * 是否成功指示
-     * @return
      */
     public boolean isSuccess() {
         return SUCCESS_CODE.equals(code);
-    }
-
-    /**
-     * 成功
-     * 有返回数据
-     */
-    public static <T> Result<T> success(T data) {
-        Result<T> result = new Result<T>();
-        result.setCode(SUCCESS_CODE);
-        result.setData(data);
-        return result;
-    }
-
-    /**
-     * 成功
-     * 无返回数据
-     */
-    public static <T> Result<T> success() {
-        return success(null);
-    }
-
-    /**
-     * 失败
-     * 失败信息
-     */
-    public static <T> Result<T> fail(String code, String message) {
-        Result<T> result = new Result<T>();
-        result.setCode(code);
-        result.setMessage(message);
-        return result;
     }
 }
