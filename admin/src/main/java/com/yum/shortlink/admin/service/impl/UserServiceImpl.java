@@ -60,12 +60,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
      */
     @Override
     public void registerUser(UserRegisterReqDTO requestParam) {
+
+        // 检查用户名是否已经存在 -- 用户名全局唯一
         if (hasUsername(requestParam.getUsername())) {
             throw new ClientException(UserErrorCodeEnum.USER_ALREADY_EXIST);
         }
+
         int inserted = baseMapper.insert(BeanUtil.toBean(requestParam, UserDO.class));
         if (inserted < 1) {
             throw new ClientException(UserErrorCodeEnum.USER_SAVE_ERROR);
         }
+
+        // 注册成功后将数据加入布隆过滤器
+        userRegisterCachePenetrationBloomFilter.add(requestParam.getUsername());
+
+
     }
 }
