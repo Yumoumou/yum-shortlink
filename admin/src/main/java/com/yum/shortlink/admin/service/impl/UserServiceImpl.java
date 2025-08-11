@@ -1,5 +1,6 @@
 package com.yum.shortlink.admin.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -8,6 +9,7 @@ import com.yum.shortlink.admin.common.convention.exception.ClientException;
 import com.yum.shortlink.admin.common.enums.UserErrorCodeEnum;
 import com.yum.shortlink.admin.dao.entity.UserDO;
 import com.yum.shortlink.admin.dao.mapper.UserMapper;
+import com.yum.shortlink.admin.dto.request.UserRegisterReqDTO;
 import com.yum.shortlink.admin.dto.response.UserRespDTO;
 import com.yum.shortlink.admin.service.IUserService;
 import lombok.RequiredArgsConstructor;
@@ -50,5 +52,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     @Override
     public Boolean hasUsername(String username) {
         return userRegisterCachePenetrationBloomFilter.contains(username);
+    }
+
+    /**
+     * 用户注册
+     * @param requestParam
+     */
+    @Override
+    public void registerUser(UserRegisterReqDTO requestParam) {
+        if (hasUsername(requestParam.getUsername())) {
+            throw new ClientException(UserErrorCodeEnum.USER_ALREADY_EXIST);
+        }
+        int inserted = baseMapper.insert(BeanUtil.toBean(requestParam, UserDO.class));
+        if (inserted < 1) {
+            throw new ClientException(UserErrorCodeEnum.USER_SAVE_ERROR);
+        }
     }
 }
