@@ -7,6 +7,7 @@ import com.yum.shortlink.admin.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
@@ -30,4 +31,17 @@ public class UserController {
 
         return Results.success(result);
     }
+
+    /**
+     * 查询用户名是否存在
+     */
+    @GetMapping("/api/shortlink/v1/user/has-username")
+    public Result<Boolean> hasUsername(@RequestParam("username") String username) {
+
+        Boolean hasUsername = userService.hasUsername(username);
+
+        return Results.success(hasUsername);
+    }
+
+
 }
