@@ -10,6 +10,8 @@ import com.yum.shortlink.admin.dao.entity.UserDO;
 import com.yum.shortlink.admin.dao.mapper.UserMapper;
 import com.yum.shortlink.admin.dto.response.UserRespDTO;
 import com.yum.shortlink.admin.service.IUserService;
+import lombok.RequiredArgsConstructor;
+import org.redisson.api.RBloomFilter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +21,11 @@ import java.util.Objects;
  * 用户接口实现层
  */
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements IUserService {
 
+    private final RBloomFilter<String> bloomFilter;
+    private final RBloomFilter<String> userRegisterCachePenetrationBloomFilter;
 
     @Override
     public UserRespDTO getUserByUsername(String username) {
@@ -44,11 +49,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
      */
     @Override
     public Boolean hasUsername(String username) {
-        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
-                .eq(UserDO::getUsername, username);
-        UserDO user = baseMapper.selectOne(queryWrapper);
-
-        return Objects.nonNull(user);
-
+        return userRegisterCachePenetrationBloomFilter.contains(username);
     }
 }
