@@ -3,6 +3,7 @@ package com.yum.shortlink.admin.controller;
 import com.yum.shortlink.admin.common.convention.result.Result;
 import com.yum.shortlink.admin.common.convention.result.Results;
 import com.yum.shortlink.admin.dto.request.UserRegisterReqDTO;
+import com.yum.shortlink.admin.dto.request.UserUpdateReqDTO;
 import com.yum.shortlink.admin.dto.response.UserRespDTO;
 import com.yum.shortlink.admin.service.IUserService;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,17 @@ public class UserController {
     public Result<Void> registerUser(@RequestBody UserRegisterReqDTO requestParam) {
 
         userService.registerUser(requestParam);
+
+        return Results.success();
+    }
+
+    /**
+     * 用户更新信息
+     */
+    @PutMapping("/api/short-link/v1/user")
+    public Result<Void> updateUser(@RequestBody UserUpdateReqDTO requestParam) {
+
+        userService.updateUser(requestParam);
 
         return Results.success();
     }

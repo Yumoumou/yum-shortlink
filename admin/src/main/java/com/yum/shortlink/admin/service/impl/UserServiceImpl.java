@@ -2,6 +2,7 @@ package com.yum.shortlink.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,6 +12,7 @@ import com.yum.shortlink.admin.common.enums.UserErrorCodeEnum;
 import com.yum.shortlink.admin.dao.entity.UserDO;
 import com.yum.shortlink.admin.dao.mapper.UserMapper;
 import com.yum.shortlink.admin.dto.request.UserRegisterReqDTO;
+import com.yum.shortlink.admin.dto.request.UserUpdateReqDTO;
 import com.yum.shortlink.admin.dto.response.UserRespDTO;
 import com.yum.shortlink.admin.service.IUserService;
 import lombok.RequiredArgsConstructor;
@@ -90,6 +92,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             lock.unlock();
         }
 
+    }
 
+    /**
+     * 根据用户名修改用户信息
+     * @param requestParam
+     */
+    @Override
+    public void updateUser(UserUpdateReqDTO requestParam) {
+        // TODO: 验证当前用户名是否为登录用户
+        LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
+                .eq(UserDO::getUsername, requestParam.getUsername());
+        baseMapper.update(BeanUtil.toBean(requestParam, UserDO.class), updateWrapper);
     }
 }
