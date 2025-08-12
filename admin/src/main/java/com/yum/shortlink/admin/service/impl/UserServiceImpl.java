@@ -44,6 +44,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     private final StringRedisTemplate stringRedisTemplate;
 
+    /**
+     * 根据用户名查询用户信息
+     */
     @Override
     public UserRespDTO getUserByUsername(String username) {
         LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
@@ -61,8 +64,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     /**
      * 查询用户名是否存在
-     * @param username
-     * @return
      */
     @Override
     public Boolean hasUsername(String username) {
@@ -71,7 +72,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     /**
      * 用户注册
-     * @param requestParam
      */
     @Override
     public void registerUser(UserRegisterReqDTO requestParam) {
@@ -104,7 +104,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     /**
      * 根据用户名修改用户信息
-     * @param requestParam
      */
     @Override
     public void updateUser(UserUpdateReqDTO requestParam) {

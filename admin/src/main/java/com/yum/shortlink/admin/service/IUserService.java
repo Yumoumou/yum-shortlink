@@ -35,8 +35,6 @@ public interface IUserService extends IService<UserDO> {
 
     /**
      * 用户登录
-     * @param requestParam
-     * @return
      */
     UserLoginRespDTO login(UserLoginReqDTO requestParam);
 }
