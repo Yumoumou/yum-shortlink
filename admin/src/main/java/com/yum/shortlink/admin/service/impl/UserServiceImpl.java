@@ -84,6 +84,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
                 userRegisterCachePenetrationBloomFilter.add(requestParam.getUsername());
                 return;
             }
+            // 没申请到锁，说明该用户名已经正在被注册，直接返回用户名已存在
             throw new ClientException(UserErrorCodeEnum.USER_ALREADY_EXIST);
         } finally {
             lock.unlock();
