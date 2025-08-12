@@ -26,6 +26,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -128,22 +130,35 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             throw new ClientException(UserErrorCodeEnum.USER_NOT_EXIST);
         }
 
-        // 登录校验成功，发放token并存入redis
-        // 用uuid作为token和redis的key
-        String uuid = UUID.randomUUID().toString();
-        stringRedisTemplate.opsForValue().set(uuid, JSON.toJSONString(user), 30L, TimeUnit.MINUTES);
+        if (stringRedisTemplate.hasKey("login_" + user.getUsername())) {
+            throw new ClientException("用户已登录");
+        }
 
+        // 登录校验成功，发放token并存入redis
+
+        /**
+         * token结构:
+         * Hash
+         * key: login_{username}
+         * value:
+         *   key: token标识
+         *   value: JSON字符串（用户信息）
+         */
+        String uuid = UUID.randomUUID().toString();
+        String tokenString = JSON.toJSONString(user);
+        stringRedisTemplate.opsForHash().put("login_" + requestParam.getUsername(), uuid, tokenString);
+        stringRedisTemplate.expire("login_" + requestParam.getUsername(), 30, TimeUnit.MINUTES);
         return new UserLoginRespDTO(uuid);
 
     }
 
     /**
      * 检查用户是否登录
-     * @param token 用户登录token
+     * @param token 用户登录token，即uuid
      */
     @Override
-    public Boolean checkLogin(String token) {
-
-        return stringRedisTemplate.hasKey(token);
+    public Boolean checkLogin(String username, String token) {
+        // token就是uuid，是hashkey
+        return Objects.nonNull(stringRedisTemplate.opsForHash().get("login_" + username, token));
     }
 }
