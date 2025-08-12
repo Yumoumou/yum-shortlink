@@ -2,8 +2,10 @@ package com.yum.shortlink.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yum.shortlink.admin.dao.entity.UserDO;
+import com.yum.shortlink.admin.dto.request.UserLoginReqDTO;
 import com.yum.shortlink.admin.dto.request.UserRegisterReqDTO;
 import com.yum.shortlink.admin.dto.request.UserUpdateReqDTO;
+import com.yum.shortlink.admin.dto.response.UserLoginRespDTO;
 import com.yum.shortlink.admin.dto.response.UserRespDTO;
 
 /**
@@ -30,4 +32,11 @@ public interface IUserService extends IService<UserDO> {
      * 根据用户名用户更新信息
      */
     void updateUser(UserUpdateReqDTO requestParam);
+
+    /**
+     * 用户登录
+     * @param requestParam
+     * @return
+     */
+    UserLoginRespDTO login(UserLoginReqDTO requestParam);
 }
