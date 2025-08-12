@@ -161,4 +161,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         // token就是uuid，是hashkey
         return Objects.nonNull(stringRedisTemplate.opsForHash().get("login_" + username, token));
     }
+
+    /**
+     * 退出登录
+     * @param username
+     * @param token 用户登录token，即uuid
+     */
+    @Override
+    public void logout(String username, String token) {
+        if (checkLogin(username, token)) {
+            stringRedisTemplate.opsForHash().delete("login_" + username, token);
+        } else {
+            throw new ClientException("用户未登录");
+        }
+    }
 }
