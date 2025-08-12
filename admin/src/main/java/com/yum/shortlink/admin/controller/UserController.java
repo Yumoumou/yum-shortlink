@@ -77,6 +77,18 @@ public class UserController {
         return Results.success(result);
     }
 
+    /**
+     * 检查用户是否存在
+     * @param token
+     */
+    @GetMapping("/api/short-link/v1/user/check-login")
+    public Result<Boolean> checkLogin(@RequestParam("token") String token) {
+
+        Boolean result = userService.checkLogin(token);
+
+        return Results.success(result);
+    }
+
 
 
 

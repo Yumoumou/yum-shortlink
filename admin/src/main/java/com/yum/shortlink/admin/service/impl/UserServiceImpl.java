@@ -136,4 +136,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         return new UserLoginRespDTO(uuid);
 
     }
+
+    /**
+     * 检查用户是否登录
+     * @param token 用户登录token
+     */
+    @Override
+    public Boolean checkLogin(String token) {
+
+        return stringRedisTemplate.hasKey(token);
+    }
 }
