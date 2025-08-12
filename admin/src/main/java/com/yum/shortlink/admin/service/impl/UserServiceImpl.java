@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yum.shortlink.admin.common.constants.RedisCacheConstants;
 import com.yum.shortlink.admin.common.convention.exception.ClientException;
 import com.yum.shortlink.admin.common.enums.UserErrorCodeEnum;
 import com.yum.shortlink.admin.dao.entity.UserDO;
@@ -14,6 +15,8 @@ import com.yum.shortlink.admin.dto.response.UserRespDTO;
 import com.yum.shortlink.admin.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RBloomFilter;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +29,10 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements IUserService {
 
-    private final RBloomFilter<String> bloomFilter;
+
     private final RBloomFilter<String> userRegisterCachePenetrationBloomFilter;
+
+    private final RedissonClient redissonClient;
 
     @Override
     public UserRespDTO getUserByUsername(String username) {
@@ -66,13 +71,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             throw new ClientException(UserErrorCodeEnum.USER_ALREADY_EXIST);
         }
 
-        int inserted = baseMapper.insert(BeanUtil.toBean(requestParam, UserDO.class));
-        if (inserted < 1) {
-            throw new ClientException(UserErrorCodeEnum.USER_SAVE_ERROR);
-        }
+        RLock lock = redissonClient.getLock(RedisCacheConstants.LOCK_USER_REGISTER_KEY + requestParam.getUsername());
 
-        // 注册成功后将数据加入布隆过滤器
-        userRegisterCachePenetrationBloomFilter.add(requestParam.getUsername());
+        try {
+            if(lock.tryLock()) {
+                int inserted = baseMapper.insert(BeanUtil.toBean(requestParam, UserDO.class));
+                if (inserted < 1) {
+                    throw new ClientException(UserErrorCodeEnum.USER_SAVE_ERROR);
+                }
+
+                // 注册成功后将数据加入布隆过滤器
+                userRegisterCachePenetrationBloomFilter.add(requestParam.getUsername());
+                return;
+            }
+            throw new ClientException(UserErrorCodeEnum.USER_ALREADY_EXIST);
+        } finally {
+            lock.unlock();
+        }
 
 
     }
