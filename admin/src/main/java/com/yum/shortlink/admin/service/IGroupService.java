@@ -19,6 +19,9 @@ package com.yum.shortlink.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yum.shortlink.admin.dao.entity.GroupDO;
+import com.yum.shortlink.admin.dto.response.ShortLinkGroupRespDTO;
+
+import java.util.List;
 
 /**
  * 短链接分组接口层
@@ -45,7 +48,7 @@ public interface IGroupService extends IService<GroupDO> {
      *
      * @return 用户短链接分组集合
      */
-//    List<ShortLinkGroupRespDTO> listGroup();
+    List<ShortLinkGroupRespDTO> listGroup();
 
     /**
      * 修改短链接分组

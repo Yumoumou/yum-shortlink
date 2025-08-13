@@ -1,15 +1,18 @@
 package com.yum.shortlink.admin.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yum.shortlink.admin.dao.entity.GroupDO;
 import com.yum.shortlink.admin.dao.mapper.GroupMapper;
+import com.yum.shortlink.admin.dto.response.ShortLinkGroupRespDTO;
 import com.yum.shortlink.admin.service.IGroupService;
 import com.yum.shortlink.admin.utils.RandomGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -40,9 +43,22 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
     }
 
     /**
+     * 查询短链接分组
+     */
+    @Override
+    public List<ShortLinkGroupRespDTO> listGroup() {
+        // TODO: 获取用户名
+        LambdaQueryWrapper<GroupDO> queryWrapper = Wrappers.lambdaQuery(GroupDO.class)
+                .eq(GroupDO::getDelFlag, 0)
+                .eq(GroupDO::getUsername, "yumoumou")
+                .orderByDesc(GroupDO::getSortOrder, GroupDO::getUpdateTime);
+        List<GroupDO> groupDOList = baseMapper.selectList(queryWrapper);
+        return BeanUtil.copyToList(groupDOList, ShortLinkGroupRespDTO.class);
+    }
+
+    /**
      * 判断当前生成的gid是否与现有记录重复
-     * @param gid
-     * @return
+     * @param gid 本次生成的gid
      */
     private boolean hasGid(String gid) {
         LambdaQueryWrapper<GroupDO> queryWrapper = Wrappers.lambdaQuery(GroupDO.class)
