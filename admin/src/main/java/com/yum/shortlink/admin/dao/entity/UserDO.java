@@ -63,5 +63,5 @@ public class UserDO extends BaseDO {
     /**
      * 删除标识
      */
-    private int delFlag;
+    private Integer delFlag;
 }

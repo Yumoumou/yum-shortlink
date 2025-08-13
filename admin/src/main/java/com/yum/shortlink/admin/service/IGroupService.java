@@ -30,7 +30,7 @@ public interface IGroupService extends IService<GroupDO> {
      *
      * @param groupName 短链接分组名
      */
-//    void saveGroup(String groupName);
+    void saveGroup(String groupName);
 
     /**
      * 新增短链接分组
