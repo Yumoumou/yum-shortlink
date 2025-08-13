@@ -2,11 +2,13 @@ package com.yum.shortlink.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yum.shortlink.admin.common.biz.user.UserContext;
 import com.yum.shortlink.admin.dao.entity.GroupDO;
 import com.yum.shortlink.admin.dao.mapper.GroupMapper;
+import com.yum.shortlink.admin.dto.request.ShortLinkGroupUpdateReqDTO;
 import com.yum.shortlink.admin.dto.response.ShortLinkGroupRespDTO;
 import com.yum.shortlink.admin.service.IGroupService;
 import com.yum.shortlink.admin.utils.RandomGenerator;
@@ -57,6 +59,23 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
                 .orderByDesc(GroupDO::getSortOrder, GroupDO::getUpdateTime);
         List<GroupDO> groupDOList = baseMapper.selectList(queryWrapper);
         return BeanUtil.copyToList(groupDOList, ShortLinkGroupRespDTO.class);
+    }
+
+    /**
+     * 修改短链接分组
+     * @param requestParam 修改链接分组参数
+     */
+    @Override
+    public void updateGroup(ShortLinkGroupUpdateReqDTO requestParam) {
+        LambdaUpdateWrapper<GroupDO> updateWrapper = Wrappers.lambdaUpdate(GroupDO.class)
+                .eq(GroupDO::getUsername, UserContext.getUsername())
+                .eq(GroupDO::getDelFlag, 0)
+                .eq(GroupDO::getGid, requestParam.getGid());
+
+        GroupDO groupDO = new GroupDO();
+        groupDO.setName(requestParam.getName());
+
+        baseMapper.update(groupDO, updateWrapper);
     }
 
     /**
