@@ -79,6 +79,27 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
     }
 
     /**
+     * 删除短链接分组
+     *
+     * 软删除 -- 将删除标识设置为1
+     * @param gid 短链接分组标识
+     */
+    @Override
+    public void deleteGroup(String gid) {
+        LambdaUpdateWrapper<GroupDO> updateWrapper = Wrappers.lambdaUpdate(GroupDO.class)
+                .eq(GroupDO::getUsername, UserContext.getUsername())
+                .eq(GroupDO::getDelFlag, 0)
+                .eq(GroupDO::getGid, gid);
+
+        GroupDO groupDO = new GroupDO();
+        groupDO.setDelFlag(1);
+
+        baseMapper.update(groupDO, updateWrapper);
+    }
+
+    /*****************************private****************************/
+
+    /**
      * 判断当前生成的gid是否与现有记录重复
      * @param gid 本次生成的gid
      */

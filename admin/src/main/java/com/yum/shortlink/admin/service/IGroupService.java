@@ -63,7 +63,7 @@ public interface IGroupService extends IService<GroupDO> {
      *
      * @param gid 短链接分组标识
      */
-//    void deleteGroup(String gid);
+    void deleteGroup(String gid);
 
     /**
      * 短链接分组排序
