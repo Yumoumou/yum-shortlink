@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yum.shortlink.admin.common.biz.user.UserContext;
 import com.yum.shortlink.admin.dao.entity.GroupDO;
 import com.yum.shortlink.admin.dao.mapper.GroupMapper;
+import com.yum.shortlink.admin.dto.request.ShortLinkGroupSortReqDTO;
 import com.yum.shortlink.admin.dto.request.ShortLinkGroupUpdateReqDTO;
 import com.yum.shortlink.admin.dto.response.ShortLinkGroupRespDTO;
 import com.yum.shortlink.admin.service.IGroupService;
@@ -95,6 +96,24 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
         groupDO.setDelFlag(1);
 
         baseMapper.update(groupDO, updateWrapper);
+    }
+
+    /**
+     * 短链接分组排序
+     * @param requestParam 短链接分组排序参数
+     */
+    @Override
+    public void sortGroup(List<ShortLinkGroupSortReqDTO> requestParam) {
+        requestParam.forEach(record -> {
+            GroupDO groupDO = GroupDO.builder()
+                    .sortOrder(record.getSortOrder())
+                    .build();
+            LambdaUpdateWrapper<GroupDO> updateWrapper = Wrappers.lambdaUpdate(GroupDO.class)
+                    .eq(GroupDO::getUsername, UserContext.getUsername())
+                    .eq(GroupDO::getGid, record.getGid())
+                    .eq(GroupDO::getDelFlag, 0);
+            baseMapper.update(groupDO, updateWrapper);
+        });
     }
 
     /*****************************private****************************/

@@ -3,6 +3,7 @@ package com.yum.shortlink.admin.controller;
 import com.yum.shortlink.admin.common.convention.result.Result;
 import com.yum.shortlink.admin.common.convention.result.Results;
 import com.yum.shortlink.admin.dto.request.ShortLinkGroupSaveReqDTO;
+import com.yum.shortlink.admin.dto.request.ShortLinkGroupSortReqDTO;
 import com.yum.shortlink.admin.dto.request.ShortLinkGroupUpdateReqDTO;
 import com.yum.shortlink.admin.dto.response.ShortLinkGroupRespDTO;
 import com.yum.shortlink.admin.service.IGroupService;
@@ -62,4 +63,17 @@ public class GroupController {
 
         return Results.success();
     }
+
+    /**
+     * 短链接分组排序
+     */
+    @PostMapping("api/short-link/v1/group/sort")
+    public Result<Void> sortGroup(@RequestBody List<ShortLinkGroupSortReqDTO> requestParam) {
+
+        groupService.sortGroup(requestParam);
+
+        return Results.success();
+    }
+
+
 }

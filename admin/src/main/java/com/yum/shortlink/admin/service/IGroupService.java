@@ -19,6 +19,7 @@ package com.yum.shortlink.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yum.shortlink.admin.dao.entity.GroupDO;
+import com.yum.shortlink.admin.dto.request.ShortLinkGroupSortReqDTO;
 import com.yum.shortlink.admin.dto.request.ShortLinkGroupUpdateReqDTO;
 import com.yum.shortlink.admin.dto.response.ShortLinkGroupRespDTO;
 
@@ -70,5 +71,5 @@ public interface IGroupService extends IService<GroupDO> {
      *
      * @param requestParam 短链接分组排序参数
      */
-//    void sortGroup(List<ShortLinkGroupSortReqDTO> requestParam);
+    void sortGroup(List<ShortLinkGroupSortReqDTO> requestParam);
 }
