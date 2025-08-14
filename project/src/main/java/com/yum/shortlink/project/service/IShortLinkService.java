@@ -17,20 +17,17 @@
 
 package com.yum.shortlink.project.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import com.yum.shortlink.project.dao.entity.ShortLinkDO;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-
-import java.util.List;
+import com.yum.shortlink.project.dto.req.ShortLinkCreateReqDTO;
+import com.yum.shortlink.project.dto.resp.ShortLinkCreateRespDTO;
 
 /**
  * 短链接接口层
  * 公众号：马丁玩编程，回复：加群，添加马哥微信（备注：link）获取项目资料
  */
-public interface ShortLinkService extends IService<ShortLinkDO> {
+public interface IShortLinkService extends IService<ShortLinkDO> {
 
     /**
      * 创建短链接
@@ -38,7 +35,7 @@ public interface ShortLinkService extends IService<ShortLinkDO> {
      * @param requestParam 创建短链接请求参数
      * @return 短链接创建信息
      */
-//    ShortLinkCreateRespDTO createShortLink(ShortLinkCreateReqDTO requestParam);
+    ShortLinkCreateRespDTO createShortLink(ShortLinkCreateReqDTO requestParam);
 
     /**
      * 根据分布式锁创建短链接
