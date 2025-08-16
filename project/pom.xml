@@ -52,6 +52,24 @@
         </dependency>
     </dependencies>
 
+    <!--将项目打包为可以直接启动的包，而不是只包含源码-->
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
     <artifactId>shorlink-project</artifactId>
 
 
