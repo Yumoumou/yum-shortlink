@@ -32,19 +32,38 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     @Override
     public ShortLinkCreateRespDTO createShortLink(ShortLinkCreateReqDTO requestParam) {
         String shortLinkSuffix = generateSuffix(requestParam);
-        ShortLinkDO shortLinkDO = BeanUtil.toBean(requestParam, ShortLinkDO.class);
-        shortLinkDO.setFullShortUrl(requestParam.getDomain() + "/" + shortLinkSuffix);
-        shortLinkDO.setShortUri(shortLinkSuffix);
-        shortLinkDO.setEnableStatus(0);
+        String fullShortUrl = requestParam.getDomain() + "/" + shortLinkSuffix;
+        ShortLinkDO shortLinkDO = ShortLinkDO.builder()
+                .domain(requestParam.getDomain())
+                .originUrl(requestParam.getOriginUrl())
+                .gid(requestParam.getGid())
+                .createdType(requestParam.getCreatedType())
+                .validDateType(requestParam.getValidDateType())
+                .validDate(requestParam.getValidDate())
+                .describe(requestParam.getDescribe())
+                .shortUri(shortLinkSuffix)
+                .enableStatus(0)
+                .fullShortUrl(fullShortUrl)
+                .build();
 
         try {
             baseMapper.insert(shortLinkDO);
         } catch (DuplicateKeyException ex) {
-            // TODO: 需要考虑布隆过滤器误判，因此还是会有duplicateKey异常
-            log.warn("短链接: {} 重复入库", requestParam.getDomain() + "/" + shortLinkSuffix);
-            throw new ServiceException("短链接生成重复");
+            // 需要考虑布隆过滤器误判，因此还是会有duplicateKey异常
+            // 再去数据库查一遍，真的重复了再抛出异常
+            // 主要是为了防止多线程并发情况下的错误，有多个线程可能会拿到相同的不存在的URI然后返回，接着去插入数据库
+            // 相当于使用分布式锁，但性能高于分布式锁
+            // TODO：布隆过滤器满了的情况，创建一个新的布隆过滤器，迁移旧过滤器的信息
+            LambdaQueryWrapper<ShortLinkDO> queryWrapper = Wrappers.<ShortLinkDO>lambdaQuery()
+                            .eq(ShortLinkDO::getFullShortUrl, fullShortUrl);
+            ShortLinkDO hasShortLinkDO = baseMapper.selectOne(queryWrapper);
+            if (Objects.nonNull(hasShortLinkDO)) {
+                log.warn("短链接: {} 重复入库", requestParam.getDomain() + "/" + shortLinkSuffix);
+                throw new ServiceException("短链接生成重复");
+            }
+
         }
-        shortUriCreateCachePenetrationBloomFilter.add(requestParam.getDomain() + "/" + shortLinkSuffix);
+        shortUriCreateCachePenetrationBloomFilter.add(fullShortUrl);
         return ShortLinkCreateRespDTO.builder()
                 .fullShortUrl(shortLinkDO.getFullShortUrl())
                 .originUrl(requestParam.getOriginUrl())
@@ -59,13 +78,17 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
      * @return
      */
     private String generateSuffix(ShortLinkCreateReqDTO requestParam) {
-        String originUrl = requestParam.getOriginUrl();
+
         String shortUri = null;
         int customGenerateCount = 0;
         while (true) {
             if (customGenerateCount > 10) {
                 throw new ServiceException("短链接生成重复");
             }
+            String originUrl = requestParam.getOriginUrl();
+            // 改变url的hash值，防止冲突
+            // 这样会导致同一个链接能够生成多个短链接，这是对的，业务上需要这个特征
+            originUrl += System.currentTimeMillis();
             shortUri = HashUtil.hashToBase62(originUrl);
             if (!shortUriCreateCachePenetrationBloomFilter.contains(requestParam.getDomain() + "/" + shortUri)) {
                 break;
