@@ -50,18 +50,5 @@ public class UserDO extends BaseDO {
      */
     private Long deletionTime;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
 
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-
-    /**
-     * 删除标识
-     */
-    private Integer delFlag;
 }
