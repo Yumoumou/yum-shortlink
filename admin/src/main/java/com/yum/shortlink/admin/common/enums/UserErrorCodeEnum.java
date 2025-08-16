@@ -8,7 +8,9 @@ public enum UserErrorCodeEnum implements IErrorCode {
 
     USER_ALREADY_EXIST("B000201", "用户已存在"),
 
-    USER_SAVE_ERROR("B000202", "用户记录新增失败");
+    USER_SAVE_ERROR("B000202", "用户记录新增失败"),
+
+    USER_TOKEN_FAIL("A000200", "用户Token验证失败");
 
     private final String code;
 

@@ -19,6 +19,9 @@ package com.yum.shortlink.admin.common.biz.user;
 
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
+import com.google.common.collect.Lists;
+import com.yum.shortlink.admin.common.convention.exception.ClientException;
+import com.yum.shortlink.admin.common.enums.UserErrorCodeEnum;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ import lombok.SneakyThrows;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -37,15 +41,15 @@ public class UserTransmitFilter implements Filter {
 
     private final StringRedisTemplate stringRedisTemplate;
 
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        String requestURI = httpServletRequest.getRequestURI();
-        if (!Objects.equals(requestURI, "/api/short-link/v1/user/login")) {
-            String username = httpServletRequest.getHeader("username");
+        String username = httpServletRequest.getHeader("username");
+        if (StrUtil.isNotBlank(username)) {
             String token = httpServletRequest.getHeader("token");
             Object userInfoJsonStr = stringRedisTemplate.opsForHash().get("login_" + username, token);
-            if (userInfoJsonStr != null) {
+            if (Objects.nonNull(userInfoJsonStr)) {
                 UserInfoDTO userInfoDTO = JSON.parseObject(userInfoJsonStr.toString(), UserInfoDTO.class);
                 UserContext.setUser(userInfoDTO);
             }
