@@ -37,3 +37,4 @@ build/
 ### Mac OS ###
 .DS_Store
 /.idea/.cache/.Apifox_Helper/.toolWindow.db
+/.idea/ApifoxUploaderProjectSetting.xml
