@@ -98,7 +98,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
                 // 注册成功后将数据加入布隆过滤器
                 userRegisterCachePenetrationBloomFilter.add(requestParam.getUsername());
                 // 注册成功后创建默认分组
-                groupService.saveGroup("默认分组");
+                groupService.saveGroup(requestParam.getUsername(), "默认分组");
                 return;
             }
             // 没申请到锁，说明该用户名已经正在被注册，直接返回用户名已存在
