@@ -24,7 +24,10 @@ import com.yum.shortlink.project.dao.entity.ShortLinkDO;
 import com.yum.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.yum.shortlink.project.dto.req.ShortLinkPageReqDTO;
 import com.yum.shortlink.project.dto.resp.ShortLinkCreateRespDTO;
+import com.yum.shortlink.project.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.yum.shortlink.project.dto.resp.ShortLinkPageRespDTO;
+
+import java.util.List;
 
 /**
  * 短链接接口层
@@ -74,10 +77,10 @@ public interface IShortLinkService extends IService<ShortLinkDO> {
     /**
      * 查询短链接分组内数量
      *
-     * @param requestParam 查询短链接分组内数量请求参数
+     * @param requestParam 查询短链接分组内数量请求参数 gids
      * @return 查询短链接分组内数量响应
      */
-//    List<ShortLinkGroupCountQueryRespDTO> listGroupShortLinkCount(List<String> requestParam);
+    List<ShortLinkGroupCountQueryRespDTO> listGroupShortLinkCount(List<String> requestParam);
 
     /**
      * 短链接跳转
