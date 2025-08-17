@@ -7,6 +7,7 @@ import com.yum.shortlink.admin.dto.request.UserRegisterReqDTO;
 import com.yum.shortlink.admin.dto.request.UserUpdateReqDTO;
 import com.yum.shortlink.admin.dto.response.UserLoginRespDTO;
 import com.yum.shortlink.admin.dto.response.UserRespDTO;
+import com.yum.shortlink.admin.service.IGroupService;
 import com.yum.shortlink.admin.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final IUserService userService;
+
+
 
     /**
      * 根据用户名查询用户信息

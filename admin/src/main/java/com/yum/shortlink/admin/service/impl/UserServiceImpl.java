@@ -17,6 +17,7 @@ import com.yum.shortlink.admin.dto.request.UserRegisterReqDTO;
 import com.yum.shortlink.admin.dto.request.UserUpdateReqDTO;
 import com.yum.shortlink.admin.dto.response.UserLoginRespDTO;
 import com.yum.shortlink.admin.dto.response.UserRespDTO;
+import com.yum.shortlink.admin.service.IGroupService;
 import com.yum.shortlink.admin.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RBloomFilter;
@@ -45,6 +46,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     private final RedissonClient redissonClient;
 
     private final StringRedisTemplate stringRedisTemplate;
+
+    private final IGroupService groupService;
 
     /**
      * 根据用户名查询用户信息
@@ -94,6 +97,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
                 // 注册成功后将数据加入布隆过滤器
                 userRegisterCachePenetrationBloomFilter.add(requestParam.getUsername());
+                // 注册成功后创建默认分组
+                groupService.saveGroup("默认分组");
                 return;
             }
             // 没申请到锁，说明该用户名已经正在被注册，直接返回用户名已存在
