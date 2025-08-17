@@ -23,6 +23,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.yum.shortlink.project.dao.entity.ShortLinkDO;
 import com.yum.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.yum.shortlink.project.dto.req.ShortLinkPageReqDTO;
+import com.yum.shortlink.project.dto.req.ShortLinkUpdateReqDTO;
 import com.yum.shortlink.project.dto.resp.ShortLinkCreateRespDTO;
 import com.yum.shortlink.project.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.yum.shortlink.project.dto.resp.ShortLinkPageRespDTO;
@@ -64,7 +65,7 @@ public interface IShortLinkService extends IService<ShortLinkDO> {
      *
      * @param requestParam 修改短链接请求参数
      */
-//    void updateShortLink(ShortLinkUpdateReqDTO requestParam);
+    void updateShortLink(ShortLinkUpdateReqDTO requestParam);
 
     /**
      * 分页查询短链接

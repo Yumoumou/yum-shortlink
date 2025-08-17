@@ -6,6 +6,7 @@ import com.yum.shortlink.admin.common.convention.result.Results;
 import com.yum.shortlink.admin.remote.dto.ShortLinkRemoteService;
 import com.yum.shortlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
 import com.yum.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
+import com.yum.shortlink.admin.remote.dto.req.ShortLinkUpdateReqDTO;
 import com.yum.shortlink.admin.remote.dto.resp.ShortLinkCreateRespDTO;
 import com.yum.shortlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
 import lombok.RequiredArgsConstructor;
@@ -40,5 +41,14 @@ public class ShortLinkController {
     public Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkPageReqDTO requestParam) {
         return shortLinkRemoteService.pageShortLink(requestParam);
 
+    }
+
+    /**
+     * 修改短链接信息
+     */
+    @PostMapping("/update")
+    public Result<Void> updateShortLink(@RequestBody ShortLinkUpdateReqDTO requestParam) {
+        shortLinkRemoteService.updateShortLink(requestParam);
+        return Results.success();
     }
 }
