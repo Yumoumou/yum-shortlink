@@ -53,6 +53,10 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core</artifactId>
+        </dependency>
     </dependencies>
 
     <!--将项目打包为可以直接启动的包，而不是只包含源码-->
