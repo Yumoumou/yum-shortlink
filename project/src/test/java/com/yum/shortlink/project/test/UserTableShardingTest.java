@@ -19,18 +19,12 @@ package com.yum.shortlink.project.test;
 
 public class UserTableShardingTest {
 
-    public static final String SQL = "CREATE TABLE `t_group_%d` (\n" +
-        "`id` bigint(20) not null auto_increment comment 'ID',\n" +
-        "`gid` varchar(32)  null comment '分组标识',\n" +
-        "`name` varchar(64)  null comment '分组名称',\n" +
-        "`username` varchar(256) null comment '创建分组用户名',\n" +
-        "`sort_order` int(3) null comment '分组排序',\n" +
-        "`create_time` datetime null comment '创建时间',\n" +
-        "`update_time` datetime null comment '修改时间',\n" +
-        "`del_flag` tinyint(1) null comment '删除标识 0：未删除 1：已删除',\n" +
-        "PRIMARY KEY (`id`),\n" +
-        "UNIQUE KEY `idx_unique_username_gid` (`gid`, `username`) USING BTREE\n" +
-        ") ENGINE=InnoDB charset = utf8mb4;";
+    public static final String SQL = "CREATE TABLE `t_link_goto_%d`(\n" +
+            " `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',\n" +
+            " `gid` varchar(32) DEFAULT 'default' COMMENT  '分组标识',\n" +
+            " `full_short_url` varchar(128) DEFAULT NULL COMMENT '完整短链接',\n" +
+            " PRIMARY KEY (`id`))\n" +
+            " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
     public static void main(String[] args) {
         for (int i = 0; i < 16; i++) {
