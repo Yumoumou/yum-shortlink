@@ -24,6 +24,7 @@ import com.yum.shortlink.project.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.yum.shortlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.yum.shortlink.project.service.IShortLinkService;
 import com.yum.shortlink.project.utils.HashUtil;
+import com.yum.shortlink.project.utils.LinkUtil;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletResponse;
@@ -102,6 +103,10 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             }
 
         }
+        stringRedisTemplate.opsForValue().set(
+                String.format(RedisKeyConstants.GOTO_SHORT_LINK_KEY,fullShortUrl),
+                requestParam.getOriginUrl(),
+                LinkUtil.getLinkCacheValidTime(requestParam.getValidDate()), TimeUnit.MILLISECONDS);
         shortUriCreateCachePenetrationBloomFilter.add(fullShortUrl);
         return ShortLinkCreateRespDTO.builder()
                 .fullShortUrl("http://" + shortLinkDO.getFullShortUrl())
