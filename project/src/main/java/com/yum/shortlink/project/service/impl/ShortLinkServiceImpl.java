@@ -229,6 +229,8 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
         // 先查布隆过滤器，布隆过滤器不存在则数据库一定不存在
         boolean contains = shortUriCreateCachePenetrationBloomFilter.contains(fullShortUrl);
         if (!contains) {
+            // 短链接不存在，跳转至404页面
+            ((HttpServletResponse) response).sendRedirect("/page/notfound");
             return;
         }
         // 查询空缓存
@@ -256,6 +258,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             if (Objects.isNull(shortLinkGotoDO)) {
                 // 此处需要进行风控，设置空缓存，防止大量相同请求打到数据库
                 stringRedisTemplate.opsForValue().set(String.format(RedisKeyConstants.GOTO_IS_NULL_SHORT_LINK_KEY, fullShortUrl), "-", 30, TimeUnit.MINUTES);
+                ((HttpServletResponse) response).sendRedirect("/page/notfound");
                 return;
             }
 
@@ -269,7 +272,9 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             if (Objects.nonNull(shortLinkDO)) {
                 // 判断该短链接是否过期
                 if (shortLinkDO.getValidDate() != null && shortLinkDO.getValidDate().before(new Date())){
+                    // 链接已过期
                     stringRedisTemplate.opsForValue().set(String.format(RedisKeyConstants.GOTO_IS_NULL_SHORT_LINK_KEY, fullShortUrl), "-", 30, TimeUnit.MINUTES);
+                    ((HttpServletResponse) response).sendRedirect("/page/notfound");
                     return;
                 }
                 // 将该条记录加入redis缓存

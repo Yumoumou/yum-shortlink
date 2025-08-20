@@ -2,6 +2,10 @@ server:
   port: 8001
 
 spring:
+  mvc:
+    view:
+      prefix: /templates/
+      suffix: .html
   datasource:
     driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
     url: jdbc:shardingsphere:classpath:shardingsphere-config-${database.env:dev}.yaml
