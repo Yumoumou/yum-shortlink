@@ -39,6 +39,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -259,15 +260,23 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             }
 
             // 查找短链接记录
-            LambdaQueryWrapper<ShortLinkDO> queryLinkRecord = Wrappers.lambdaQuery(ShortLinkDO.class)
+            LambdaQueryWrapper<ShortLinkDO> queryWrapper = Wrappers.lambdaQuery(ShortLinkDO.class)
                     .eq(ShortLinkDO::getGid, shortLinkGotoDO.getGid())
                     .eq(ShortLinkDO::getDelFlag, 0)
                     .eq(ShortLinkDO::getEnableStatus, 0)
                     .eq(ShortLinkDO::getFullShortUrl, fullShortUrl);
-            ShortLinkDO shortLinkDO = baseMapper.selectOne(queryLinkRecord);
+            ShortLinkDO shortLinkDO = baseMapper.selectOne(queryWrapper);
             if (Objects.nonNull(shortLinkDO)) {
+                // 判断该短链接是否过期
+                if (shortLinkDO.getValidDate() != null && shortLinkDO.getValidDate().before(new Date())){
+                    stringRedisTemplate.opsForValue().set(String.format(RedisKeyConstants.GOTO_IS_NULL_SHORT_LINK_KEY, fullShortUrl), "-", 30, TimeUnit.MINUTES);
+                    return;
+                }
                 // 将该条记录加入redis缓存
-                stringRedisTemplate.opsForValue().set(String.format(RedisKeyConstants.GOTO_SHORT_LINK_KEY, fullShortUrl), shortLinkDO.getOriginUrl());
+                stringRedisTemplate.opsForValue().set(
+                        String.format(RedisKeyConstants.GOTO_SHORT_LINK_KEY, fullShortUrl),
+                        shortLinkDO.getOriginUrl(),
+                        LinkUtil.getLinkCacheValidTime(shortLinkDO.getValidDate()), TimeUnit.MILLISECONDS);
                 ((HttpServletResponse) response).sendRedirect(shortLinkDO.getOriginUrl());
             }
         } finally {
