@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yum.shortlink.admin.common.convention.result.Result;
 import com.yum.shortlink.admin.common.convention.result.Results;
 import com.yum.shortlink.admin.remote.dto.ShortLinkRemoteService;
-import com.yum.shortlink.admin.remote.dto.req.RecycleBinRecoverReqDTO;
-import com.yum.shortlink.admin.remote.dto.req.RecycleBinSaveReqDTO;
-import com.yum.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
-import com.yum.shortlink.admin.remote.dto.req.ShortLinkRecycleBinPageReqDTO;
+import com.yum.shortlink.admin.remote.dto.req.*;
 import com.yum.shortlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
 import com.yum.shortlink.admin.service.IRecycleBinService;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +51,15 @@ public class RecycleBinController {
     @PostMapping("/api/short-link/admin/v1/recycle-bin/recover")
     public Result<Void> recoverRecycleBin(@RequestBody RecycleBinRecoverReqDTO requestParam) {
         shortLinkRemoteService.recoverRecycleBin(requestParam);
+        return Results.success();
+    }
+
+    /**
+     * 从回收站中彻底删除链接
+     */
+    @PostMapping("/api/short-link/admin/v1/recycle-bin/remove")
+    public Result<Void> removeRecycleBin(@RequestBody RecycleBinRemoveReqDTO requestParam) {
+        shortLinkRemoteService.removeRecycleBin(requestParam);
         return Results.success();
     }
 }

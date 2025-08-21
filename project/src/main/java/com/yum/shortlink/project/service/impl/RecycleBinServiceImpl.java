@@ -9,10 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yum.shortlink.project.common.constants.RedisKeyConstants;
 import com.yum.shortlink.project.dao.entity.ShortLinkDO;
 import com.yum.shortlink.project.dao.mapper.ShortLinkMapper;
-import com.yum.shortlink.project.dto.req.RecycleBinRecoverReqDTO;
-import com.yum.shortlink.project.dto.req.RecycleBinSaveReqDTO;
-import com.yum.shortlink.project.dto.req.ShortLinkPageReqDTO;
-import com.yum.shortlink.project.dto.req.ShortLinkRecycleBinPageReqDTO;
+import com.yum.shortlink.project.dto.req.*;
 import com.yum.shortlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.yum.shortlink.project.service.IRecycleBinService;
 import com.yum.shortlink.project.utils.LinkUtil;
@@ -86,5 +83,18 @@ public class RecycleBinServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLin
 
         // 删除空缓存键
         stringRedisTemplate.delete(String.format(RedisKeyConstants.GOTO_IS_NULL_SHORT_LINK_KEY, requestParam.getFullShortUrl()));
+    }
+
+    /**
+     * 从回收站彻底删除短链接
+     */
+    @Override
+    public void removeRecycleBin(RecycleBinRemoveReqDTO requestParam) {
+        LambdaUpdateWrapper<ShortLinkDO> updateWrapper = Wrappers.lambdaUpdate(ShortLinkDO.class)
+                .eq(ShortLinkDO::getFullShortUrl, requestParam.getFullShortUrl())
+                .eq(ShortLinkDO::getGid, requestParam.getGid())
+                .eq(ShortLinkDO::getEnableStatus, 1)
+                .eq(ShortLinkDO::getDelFlag, 0);
+        baseMapper.delete(updateWrapper);
     }
 }
