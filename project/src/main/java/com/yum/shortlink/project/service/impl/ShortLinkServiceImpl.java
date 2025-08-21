@@ -275,21 +275,23 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .eq(ShortLinkDO::getEnableStatus, 0)
                     .eq(ShortLinkDO::getFullShortUrl, fullShortUrl);
             ShortLinkDO shortLinkDO = baseMapper.selectOne(queryWrapper);
-            if (Objects.nonNull(shortLinkDO)) {
-                // 判断该短链接是否过期
-                if (shortLinkDO.getValidDate() != null && shortLinkDO.getValidDate().before(new Date())){
-                    // 链接已过期
-                    stringRedisTemplate.opsForValue().set(String.format(RedisKeyConstants.GOTO_IS_NULL_SHORT_LINK_KEY, fullShortUrl), "-", 30, TimeUnit.MINUTES);
-                    ((HttpServletResponse) response).sendRedirect("/page/notfound");
-                    return;
-                }
-                // 将该条记录加入redis缓存
-                stringRedisTemplate.opsForValue().set(
-                        String.format(RedisKeyConstants.GOTO_SHORT_LINK_KEY, fullShortUrl),
-                        shortLinkDO.getOriginUrl(),
-                        LinkUtil.getLinkCacheValidTime(shortLinkDO.getValidDate()), TimeUnit.MILLISECONDS);
-                ((HttpServletResponse) response).sendRedirect(shortLinkDO.getOriginUrl());
+
+            // 链接不存在或链接已过期
+            if (Objects.isNull(shortLinkDO) || shortLinkDO.getValidDate().before(new Date())) {
+                stringRedisTemplate.opsForValue().set(String.format(RedisKeyConstants.GOTO_IS_NULL_SHORT_LINK_KEY, fullShortUrl), "-", 30, TimeUnit.MINUTES);
+                ((HttpServletResponse) response).sendRedirect("/page/notfound");
+                return;
             }
+
+            // 链接记录存在且available
+            // 将该条记录加入redis缓存
+            stringRedisTemplate.opsForValue().set(
+                    String.format(RedisKeyConstants.GOTO_SHORT_LINK_KEY, fullShortUrl),
+                    shortLinkDO.getOriginUrl(),
+                    LinkUtil.getLinkCacheValidTime(shortLinkDO.getValidDate()), TimeUnit.MILLISECONDS);
+            // 重定向至目标url
+            ((HttpServletResponse) response).sendRedirect(shortLinkDO.getOriginUrl());
+
         } finally {
             lock.unlock();
         }
