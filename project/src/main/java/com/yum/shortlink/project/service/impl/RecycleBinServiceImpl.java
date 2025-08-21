@@ -9,6 +9,7 @@ import com.yum.shortlink.project.dao.mapper.ShortLinkMapper;
 import com.yum.shortlink.project.dto.req.RecycleBinSaveReqDTO;
 import com.yum.shortlink.project.service.IRecycleBinService;
 import com.yum.shortlink.project.utils.LinkUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
  * 回收站管理接口实现层
  */
 @Service
+@RequiredArgsConstructor
 public class RecycleBinServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLinkDO> implements IRecycleBinService {
 
     private final StringRedisTemplate stringRedisTemplate;
