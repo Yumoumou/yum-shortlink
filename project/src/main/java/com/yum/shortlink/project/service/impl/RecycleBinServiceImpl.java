@@ -1,12 +1,17 @@
 package com.yum.shortlink.project.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yum.shortlink.project.common.constants.RedisKeyConstants;
 import com.yum.shortlink.project.dao.entity.ShortLinkDO;
 import com.yum.shortlink.project.dao.mapper.ShortLinkMapper;
 import com.yum.shortlink.project.dto.req.RecycleBinSaveReqDTO;
+import com.yum.shortlink.project.dto.req.ShortLinkPageReqDTO;
+import com.yum.shortlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.yum.shortlink.project.service.IRecycleBinService;
 import com.yum.shortlink.project.utils.LinkUtil;
 import lombok.RequiredArgsConstructor;
@@ -41,5 +46,24 @@ public class RecycleBinServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLin
 
         // 删除缓存中的数据
         stringRedisTemplate.delete(String.format(RedisKeyConstants.GOTO_SHORT_LINK_KEY, requestParam.getFullShortUrl()));
+    }
+
+    /**
+     * 分页查询回收站
+     */
+    @Override
+    public IPage<ShortLinkPageRespDTO> pageShortLink(ShortLinkPageReqDTO requestParam) {
+        LambdaQueryWrapper<ShortLinkDO> queryWrapper = Wrappers.lambdaQuery(ShortLinkDO.class)
+                .eq(ShortLinkDO::getGid, requestParam.getGid())
+                .eq(ShortLinkDO::getDelFlag, 0)
+                .eq(ShortLinkDO::getEnableStatus, 1)
+                .orderByDesc(ShortLinkDO::getCreateTime);
+        ShortLinkPageReqDTO resultPage = baseMapper.selectPage(requestParam, queryWrapper);
+        return resultPage.convert(each ->
+        {
+            ShortLinkPageRespDTO result = BeanUtil.toBean(each, ShortLinkPageRespDTO.class);
+            result.setDomain("http://" + result.getDomain());
+            return result;
+        });
     }
 }
