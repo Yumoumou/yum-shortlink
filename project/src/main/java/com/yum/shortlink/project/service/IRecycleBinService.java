@@ -3,6 +3,7 @@ package com.yum.shortlink.project.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yum.shortlink.project.dao.entity.ShortLinkDO;
+import com.yum.shortlink.project.dto.req.RecycleBinRecoverReqDTO;
 import com.yum.shortlink.project.dto.req.RecycleBinSaveReqDTO;
 import com.yum.shortlink.project.dto.req.ShortLinkPageReqDTO;
 import com.yum.shortlink.project.dto.req.ShortLinkRecycleBinPageReqDTO;
@@ -22,4 +23,9 @@ public interface IRecycleBinService extends IService<ShortLinkDO> {
      * 分页查询回收站
      */
     IPage<ShortLinkPageRespDTO> pageShortLink(ShortLinkRecycleBinPageReqDTO requestParam);
+
+    /**
+     * 从回收站恢复短链接
+     */
+    void recoverRecycleBin(RecycleBinRecoverReqDTO requestParam);
 }
