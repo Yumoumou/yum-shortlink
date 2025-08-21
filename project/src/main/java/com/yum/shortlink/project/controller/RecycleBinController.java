@@ -5,6 +5,7 @@ import com.yum.shortlink.project.common.convention.result.Result;
 import com.yum.shortlink.project.common.convention.result.Results;
 import com.yum.shortlink.project.dto.req.RecycleBinSaveReqDTO;
 import com.yum.shortlink.project.dto.req.ShortLinkPageReqDTO;
+import com.yum.shortlink.project.dto.req.ShortLinkRecycleBinPageReqDTO;
 import com.yum.shortlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.yum.shortlink.project.service.IRecycleBinService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class RecycleBinController {
      * 分页查询回收站
      */
     @GetMapping("/api/short-link/v1/recycle-bin/page")
-    public Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkPageReqDTO requestParam) {
+    public Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkRecycleBinPageReqDTO requestParam) {
         IPage<ShortLinkPageRespDTO> result = recycleBinService.pageShortLink(requestParam);
         return Results.success(result);
     }

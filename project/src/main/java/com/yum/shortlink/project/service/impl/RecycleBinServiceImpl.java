@@ -11,6 +11,7 @@ import com.yum.shortlink.project.dao.entity.ShortLinkDO;
 import com.yum.shortlink.project.dao.mapper.ShortLinkMapper;
 import com.yum.shortlink.project.dto.req.RecycleBinSaveReqDTO;
 import com.yum.shortlink.project.dto.req.ShortLinkPageReqDTO;
+import com.yum.shortlink.project.dto.req.ShortLinkRecycleBinPageReqDTO;
 import com.yum.shortlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.yum.shortlink.project.service.IRecycleBinService;
 import com.yum.shortlink.project.utils.LinkUtil;
@@ -52,13 +53,13 @@ public class RecycleBinServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLin
      * 分页查询回收站
      */
     @Override
-    public IPage<ShortLinkPageRespDTO> pageShortLink(ShortLinkPageReqDTO requestParam) {
+    public IPage<ShortLinkPageRespDTO> pageShortLink(ShortLinkRecycleBinPageReqDTO requestParam) {
         LambdaQueryWrapper<ShortLinkDO> queryWrapper = Wrappers.lambdaQuery(ShortLinkDO.class)
-                .eq(ShortLinkDO::getGid, requestParam.getGid())
+                .in(ShortLinkDO::getGid, requestParam.getGidList())
                 .eq(ShortLinkDO::getDelFlag, 0)
                 .eq(ShortLinkDO::getEnableStatus, 1)
                 .orderByDesc(ShortLinkDO::getCreateTime);
-        ShortLinkPageReqDTO resultPage = baseMapper.selectPage(requestParam, queryWrapper);
+        ShortLinkRecycleBinPageReqDTO resultPage = baseMapper.selectPage(requestParam, queryWrapper);
         return resultPage.convert(each ->
         {
             ShortLinkPageRespDTO result = BeanUtil.toBean(each, ShortLinkPageRespDTO.class);
